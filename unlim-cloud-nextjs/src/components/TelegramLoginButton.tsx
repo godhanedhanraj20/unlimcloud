@@ -19,10 +19,17 @@ interface TelegramLoginButtonProps {
   onAuth: (user: TelegramUser) => void; // Callback function to handle authentication
 }
 
+// Extend the Window interface to include our custom onTelegramAuth function
+interface CustomWindow extends Window {
+  onTelegramAuth?: (user: TelegramUser) => void;
+}
+
+declare const window: CustomWindow;
+
 const TelegramLoginButton = ({ botName, onAuth }: TelegramLoginButtonProps) => {
   useEffect(() => {
     // Make the callback function available globally for the Telegram script
-    (window as any).onTelegramAuth = onAuth;
+    window.onTelegramAuth = onAuth;
 
     // Load the Telegram widget script
     const script = document.createElement('script');
@@ -30,7 +37,7 @@ const TelegramLoginButton = ({ botName, onAuth }: TelegramLoginButtonProps) => {
     script.async = true;
     script.setAttribute('data-telegram-login', botName);
     script.setAttribute('data-size', 'large');
-    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+    script.setAttribute('data-onauth', 'window.onTelegramAuth(user)');
     script.setAttribute('data-request-access', 'write');
 
     // Find the container and append the script
@@ -41,7 +48,9 @@ const TelegramLoginButton = ({ botName, onAuth }: TelegramLoginButtonProps) => {
 
     // Cleanup function to remove the global callback
     return () => {
-      delete (window as any).onTelegramAuth;
+      if (window.onTelegramAuth) {
+        delete window.onTelegramAuth;
+      }
       if (container && script.parentNode === container) {
         container.removeChild(script);
       }

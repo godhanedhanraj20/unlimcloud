@@ -15,7 +15,7 @@ interface FileSystemItem {
 
 const FileManager = () => {
   const [items, setItems] = useState<FileSystemItem[]>([]);
-  const [currentPath, setCurrentPath] = useState<string>('/');
+  const currentPath = '/';
   const [loading, setLoading] = useState<boolean>(true);
   const [uploading, setUploading] = useState<boolean>(false);
 
@@ -37,7 +37,7 @@ const FileManager = () => {
 
   useEffect(() => {
     fetchItems();
-  }, [currentPath]);
+  }, []);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
