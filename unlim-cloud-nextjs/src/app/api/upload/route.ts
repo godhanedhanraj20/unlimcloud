@@ -16,9 +16,10 @@ export async function POST(request: NextRequest) {
 
   try {
     await mkdir(uploadDir, { recursive: true });
-  } catch (error: any) {
+  } catch (e: unknown) {
+    const error = e as { code?: string };
     if (error.code !== 'EEXIST') {
-      console.error('Error creating directory:', error);
+      console.error('Error creating directory:', e);
       return NextResponse.json({ success: false, error: 'Could not create upload directory.' });
     }
   }
@@ -27,11 +28,9 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Save the file to the `public/uploads` directory
     const filePath = join(uploadDir, file.name);
     await writeFile(filePath, buffer);
 
-    // Create a URL to access the file
     const fileUrl = `/uploads/${file.name}`;
     uploadedFileUrls.push(fileUrl);
   }
