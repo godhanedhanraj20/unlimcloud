@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     domains: ['az743702.vo.msecnd.net'],
   },
   output: 'export',
+  distDir: 'build',
 };
 
 export default nextConfig;

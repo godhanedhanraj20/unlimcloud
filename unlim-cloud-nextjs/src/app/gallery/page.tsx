@@ -32,7 +32,7 @@ export default function GalleryPage() {
 
     const formData = new FormData();
     files.forEach((file) => {
-      formData.append('files', file);
+      formData.append('files[]', file);
     });
 
     try {
@@ -54,7 +54,14 @@ export default function GalleryPage() {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
           setMessage(data.message || 'Files uploaded successfully!');
-          setUploadedFiles((prevFiles) => [...prevFiles, ...data.files]);
+          const newFiles = data.data.map((fileUrl: string, index: number) => ({
+            original: fileUrl,
+            thumbnail: fileUrl, // Using the same URL for thumbnail
+            name: files[index].name,
+            size: files[index].size,
+            date: new Date().toISOString(),
+          }));
+          setUploadedFiles((prevFiles) => [...prevFiles, ...newFiles]);
         } else {
           const data = JSON.parse(xhr.responseText);
           setMessage(data.error || 'An error occurred during upload.');
